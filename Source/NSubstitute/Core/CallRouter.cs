@@ -52,7 +52,10 @@ namespace NSubstitute.Core
 
             var routeToUseForThisCall = _currentRoute;
             UseDefaultRouteForNextCall();
-            return routeToUseForThisCall.Handle(call);
+            using (_context.HandleCall(call))
+            {
+                return routeToUseForThisCall.Handle(call);
+            }
         }
 
         public void LastCallShouldReturn(IReturn returnValue, MatchArgs matchArgs)

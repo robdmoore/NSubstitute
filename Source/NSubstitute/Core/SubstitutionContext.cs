@@ -19,6 +19,7 @@ namespace NSubstitute.Core
         readonly RobustThreadLocal<IList<IArgumentSpecification>> _argumentSpecifications = new RobustThreadLocal<IList<IArgumentSpecification>>(() => new List<IArgumentSpecification>());
         readonly RobustThreadLocal<Func<ICall, object[]>> _getArgumentsForRaisingEvent = new RobustThreadLocal<Func<ICall, object[]>>();
         readonly RobustThreadLocal<Query> _currentQuery = new RobustThreadLocal<Query>();
+        private ICall _callBeingHandled;
 
         static SubstitutionContext()
         {
@@ -43,6 +44,19 @@ namespace NSubstitute.Core
         public ISubstituteFactory SubstituteFactory { get { return _substituteFactory; } }
         public SequenceNumberGenerator SequenceNumberGenerator { get { return _sequenceNumberGenerator; } }
         public bool IsQuerying { get { return _currentQuery.Value != null; } }
+        public bool IsHandlingCall(ICall call)
+        {
+            return _callBeingHandled == call;
+        }
+
+        public DisposableAction HandleCall(ICall call)
+        {
+            if (!IsHandlingCall(call))
+                return DisposableAction.EmptyAction;
+
+            _callBeingHandled = call;
+            return new DisposableAction(() => _callBeingHandled = null);
+        }
 
         public void LastCallShouldReturn(IReturn value, MatchArgs matchArgs)
         {

@@ -15,6 +15,9 @@ namespace NSubstitute.Routing.Handlers
 
         public RouteAction Handle(ICall call)
         {
+            if (!SubstitutionContext.Current.IsHandlingCall(call))
+                return RouteAction.Continue();
+
             call.AssignSequenceNumber(_generator.Next());
             _callStack.Push(call);
             return RouteAction.Continue();

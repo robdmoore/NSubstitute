@@ -16,6 +16,8 @@ namespace NSubstitute.Core
         void RaiseEventForNextCall(Func<ICall, object[]> getArguments);
         IQueryResults RunQuery(Action calls);
         bool IsQuerying { get; }
+        bool IsHandlingCall(ICall call);
+        DisposableAction HandleCall(ICall call);
         void AddToQuery(object target, ICallSpecification callSpecification);
     }
 }
